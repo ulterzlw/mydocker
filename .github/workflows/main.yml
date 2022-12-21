@@ -21,8 +21,8 @@ jobs:
               matrix=${changed_file},$matrix
             fi
           done
-          echo $matrix
-          echo "matrix=$(echo $matrix | jq -R -s -c 'split(",")[:-1]')" >> $GITHUB_OUTPUT
+          # echo "matrix=$(echo $matrix | jq -R -s -c 'split(",")[:-1]')" >> $GITHUB_OUTPUT
+          echo "matrix=$(find docker -maxdepth 3 -type f -name Dockerfile | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
 
   build:
     needs: list
