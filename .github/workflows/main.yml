@@ -1,0 +1,58 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: files
+        uses: jitterbit/get-changed-files@v1
+      - id: set-matrix
+        run: |
+          for changed_file in ${{ steps.files.outputs.added_modified }}; do
+            if [[ ${changed_file} == docker/*/Dockerfile ]]; then
+              matrix=${changed_file},$matrix
+            fi
+          done
+          echo $matrix
+          echo "matrix=$(echo $matrix | jq -R -s -c 'split(",")[:-1]')" >> $GITHUB_OUTPUT
+
+  build:
+    needs: list
+    if: needs.list.outputs.matrix != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ${{ fromJson(needs.list.outputs.matrix) }}
+
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - 
+        name: Set tag
+        run: echo "tags=$(echo ${{ matrix.image }} | sed -r 's/^.{7}//;s/.{11}$//;s/\//:/g')" >> $GITHUB_ENV # trunc docker/*/Dockerfile
+      -
+        name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ${{ matrix.image }}
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.tags }}
