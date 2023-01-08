@@ -1,0 +1,13 @@
+services: 
+  test:
+    image: ulterzlw/bronze:bionic
+    runtime: nvidia
+    environment:
+      DISPLAY:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    volumes:
+      - ~/.Xauthority:/root/.Xauthority
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    stdin_open: true
+    tty: true

@@ -58,5 +58,4 @@ RUN \
 # ccache
     echo "export PATH=\"/usr/lib/ccache:\$PATH\"" >> /root/.bashrc
 
-COPY . .  
 WORKDIR /root

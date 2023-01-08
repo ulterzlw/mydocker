@@ -1,4 +1,4 @@
-FROM ros:melodic-perception
+FROM osrf/ros:melodic-desktop
 
 # ros package
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -49,5 +49,3 @@ RUN apt-get install -y libnvidia-gl-510
 RUN rm * -rf
 
 WORKDIR /root
-
-COPY . .  

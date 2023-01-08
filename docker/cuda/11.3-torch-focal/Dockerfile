@@ -9,5 +9,3 @@ RUN bash /tmp/conda.sh -b -p /root/miniconda3 && \
     conda clean -afy && \
     find /root/miniconda3/ -follow -type f -name '*.pyc' -delete && \
     rm /tmp/conda.sh
-
-COPY . .
