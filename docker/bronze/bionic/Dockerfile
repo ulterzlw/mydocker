@@ -1,4 +1,4 @@
-FROM osrf/ros:melodic-desktop
+FROM ros:melodic-perception
 
 # ros package
 RUN apt-get update && apt-get install -y --no-install-recommends \
