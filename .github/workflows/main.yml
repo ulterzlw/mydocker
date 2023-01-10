@@ -48,12 +48,15 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - 
         name: Set tag
-        run: echo "tags=$(echo ${{ matrix.image }} | sed -r 's/^.{7}//;s/.{11}$//;s/\//:/g')" >> $GITHUB_ENV # trunc docker/*/Dockerfile
+        run: |
+          echo "tags=$(echo ${{ matrix.image }} | sed -r 's/^.{7}//;s/.{11}$//;s/\//:/g')" >> $GITHUB_ENV
+          echo "context=$(dirname ${{ matrix.image }})" >> $GITHUB_ENV
+          # trunc docker/*/Dockerfile
       -
         name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ${{ env.context }} 
           file: ${{ matrix.image }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.tags }}
