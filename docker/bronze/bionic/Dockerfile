@@ -2,7 +2,7 @@ FROM ros:melodic-perception
 
 # ros package
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-${ROS_DISTRO}-tf2-sensor-msgs ros-${ROS_DISTRO}-tf-conversions ros-${ROS_DISTRO}-rviz ros-${ROS_DISTRO}-rqt* ros-${ROS_DISTRO}-plotjuggler-ros
+    ros-${ROS_DISTRO}-tf2-sensor-msgs ros-${ROS_DISTRO}-tf-conversions ros-${ROS_DISTRO}-rviz ros-${ROS_DISTRO}-rqt* ros-${ROS_DISTRO}-plotjuggler-ros zip
 
 # source ros
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /root/.bashrc

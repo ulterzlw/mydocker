@@ -15,7 +15,7 @@ FROM ros:humble-perception
 
 RUN apt-get update && apt-get install -y \
 # mesa
-    git curl vim tmux software-properties-common bash-completion gdb python3-pip python3-tk libomp-dev ccache \
+    zip git curl vim tmux software-properties-common bash-completion gdb python3-pip python3-tk libomp-dev ccache \
 # ros pkg
     ros-${ROS_DISTRO}-tf2-sensor-msgs ros-${ROS_DISTRO}-rviz2 ros-${ROS_DISTRO}-rqt* ros-${ROS_DISTRO}-plotjuggler-ros \
 # open3d

@@ -24,7 +24,7 @@ FROM ros:noetic-perception
 
 RUN apt-get update && apt-get install -y \
 # mesa
-    git curl vim tmux software-properties-common bash-completion python3-catkin-tools gdb python3-pip python3-tk libomp-dev ccache \
+    zip git curl vim tmux software-properties-common bash-completion python3-catkin-tools gdb python3-pip python3-tk libomp-dev ccache \
 # ros pkg
     ros-${ROS_DISTRO}-tf2-sensor-msgs ros-${ROS_DISTRO}-tf-conversions ros-${ROS_DISTRO}-rviz ros-${ROS_DISTRO}-rqt* ros-${ROS_DISTRO}-plotjuggler-ros \
 # ceres
