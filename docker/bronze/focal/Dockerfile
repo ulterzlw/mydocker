@@ -8,7 +8,7 @@ RUN apt-get install -y --no-install-recommends libfmt-dev
 RUN mkdir Sophus && cd Sophus && git init && git remote add origin https://github.com/strasdat/Sophus.git && git fetch --depth 1 origin 57ed05ac0b3ea4b1c8ba45e8d81bfda11771e69b && git checkout FETCH_HEAD
 RUN cd Sophus && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SOPHUS_EXAMPLES=OFF -DBUILD_SOPHUS_TESTS=OFF .. && make && make DESTDIR=/tmp install
 
-# cmake
+# cmake 3.19+
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null && \
     echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
     apt-get update && apt-get install -y --no-install-recommends --reinstall kitware-archive-keyring cmake
@@ -20,6 +20,7 @@ RUN git clone --depth 1 --single-branch --branch v0.17.0 https://github.com/isl-
 RUN cd Open3D && mkdir build && cd build && \
     cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_BUILD_TYPE=Release -DBUILD_CPP_EXAMPLES=OFF -DGLIBCXX_USE_CXX11_ABI=ON .. && \
     make && make DESTDIR=/tmp install && make install-pip-package
+RUN mkdir -p /tmp/usr/local/lib/python3.8 && mv /usr/local/lib/python3.8/dist-packages /tmp/usr/local/lib/python3.8/dist-packages
 
 FROM ros:noetic-perception
 
@@ -38,19 +39,16 @@ RUN apt-get update && apt-get install -y \
 # mesa
     pip3 install --no-cache-dir matplotlib scikit-learn
 
+COPY --from=builder Open3D/util Open3D/util
+COPY --from=builder Open3D/python Open3D/python
+
 RUN \ 
-# cmake >3.20
-    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null && \
-    echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
-    apt-get update && apt-get install -y --no-install-recommends --reinstall kitware-archive-keyring cmake && \
 # open3d depend
-    git clone --depth 1 --single-branch --branch v0.17.0 https://github.com/isl-org/Open3D.git && \
-    Open3D/util/install_deps_ubuntu.sh assume-yes && pip3 install -r Open3D/python/requirements.txt -r Open3D/python/requirements_build.txt && \
+    Open3D/util/install_deps_ubuntu.sh assume-yes && pip3 install -r Open3D/python/requirements.txt && \
     rm Open3D/ -rf
 
 
 COPY --from=builder /tmp .
-COPY --from=builder /usr/local/lib/python3.8/site-packages /usr/local/lib/python3.8/site-packages
 
 RUN \
 # auto completion
