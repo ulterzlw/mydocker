@@ -13,12 +13,14 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/nul
     echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
     apt-get update && apt-get install -y --no-install-recommends --reinstall kitware-archive-keyring cmake
 
+RUN apt-get install -y nvidia-cuda-toolkit
+
 # open3d
 RUN pip install -U pip
 RUN git clone --depth 1 --single-branch --branch v0.17.0 https://github.com/isl-org/Open3D.git && \
     Open3D/util/install_deps_ubuntu.sh assume-yes && pip3 install -r Open3D/python/requirements.txt -r Open3D/python/requirements_build.txt
 RUN cd Open3D && mkdir build && cd build && \
-    cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF .. && \
+    cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_BUILD_TYPE=Release -DBUILD_CPP_EXAMPLES=OFF -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=ON .. && \
     make && make DESTDIR=/tmp install && make install-pip-package
 RUN mkdir -p /tmp/usr/local/lib/python3.8 && mv /usr/local/lib/python3.8/dist-packages /tmp/usr/local/lib/python3.8/dist-packages
 
